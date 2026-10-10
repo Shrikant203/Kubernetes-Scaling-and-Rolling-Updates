@@ -1,0 +1,32 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: web
+  namespace: scale-demo
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: web
+  minReplicas: 3
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50          # percent of the 100m CPU request
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Pods
+          value: 3
+          periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 30      # shortened from the 300 s default so the demo finishes quickly
+      policies:
+        - type: Pods
+          value: 3
+          periodSeconds: 15

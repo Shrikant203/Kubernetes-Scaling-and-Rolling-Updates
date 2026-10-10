@@ -1,0 +1,290 @@
+[
+  {
+    "title": "Tool versions",
+    "cmd": "docker --version && kubectl version --client && kind version",
+    "output": "Docker version 29.8.2, build 7fc2dff\nClient Version: v1.37.1\nKustomize Version: v5.8.1\nkind v0.33.0 go1.27.0 darwin/arm64",
+    "rc": 0
+  },
+  {
+    "title": "Build image 1.0",
+    "cmd": "docker build --progress=plain --provenance=false --sbom=false --build-arg BASE=python:3.12-slim --build-arg VERSION=1.0 --build-arg BROKEN=0 -t scale-app:1.0 app14 2>&1",
+    "output": "#10 [5/5] COPY app.py .\n#10 DONE 0.0s\n\n#11 exporting to image\n#11 exporting layers\n#11 exporting layers 0.7s done\n#11 exporting manifest sha256:a4c99e89918dacfbbab5410128d059e9c7d4900781b05009139c826cb10ed9ef done\n#11 exporting config sha256:39b76e757e21ba319a9d83616c5b8c9732d3e9d1cbaa85eb16e414a657c20d54 done\n#11 naming to docker.io/library/scale-app:1.0 done\n#11 unpacking to docker.io/library/scale-app:1.0\n#11 unpacking to docker.io/library/scale-app:1.0 0.2s done\n#11 DONE 0.9s\n\nView build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/2xspyq5ge1b9029kzk2bbn2tl",
+    "rc": 0
+  },
+  {
+    "title": "Build image 2.0",
+    "cmd": "docker build --progress=plain --provenance=false --sbom=false --build-arg BASE=python:3.12-slim --build-arg VERSION=2.0 --build-arg BROKEN=0 -t scale-app:2.0 app14 2>&1",
+    "output": "#8 CACHED\n\n#9 [5/5] COPY app.py .\n#9 CACHED\n\n#10 exporting to image\n#10 exporting layers done\n#10 exporting manifest sha256:035ee86bf47fbf4a3e2a2d87f2e4864e1e425e97f28b062ba0d5c919d61f7a9c done\n#10 exporting config sha256:d0355e94a1b160555a489da07b4c97936e4a36eac46bbfc47abb4ee6a78a2589 done\n#10 naming to docker.io/library/scale-app:2.0 done\n#10 unpacking to docker.io/library/scale-app:2.0 done\n#10 DONE 0.0s\n\nView build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/ltfu07qvaae80jqj6hw61k2q6",
+    "rc": 0
+  },
+  {
+    "title": "Build image 3.0 (faulty)",
+    "cmd": "docker build --progress=plain --provenance=false --sbom=false --build-arg BASE=python:3.12-slim --build-arg VERSION=3.0 --build-arg BROKEN=1 -t scale-app:3.0 app14 2>&1",
+    "output": "#8 CACHED\n\n#9 [5/5] COPY app.py .\n#9 CACHED\n\n#10 exporting to image\n#10 exporting layers done\n#10 exporting manifest sha256:09fb620cbe446acf6ae989d20c6136822cd4903cfb8350d8491b69c6f3c0d72d done\n#10 exporting config sha256:f762a9bdef226d5ce6c41fa7fc1bcf2e46d5ab48c884a35af795f1aec3045d21 done\n#10 naming to docker.io/library/scale-app:3.0 done\n#10 unpacking to docker.io/library/scale-app:3.0 done\n#10 DONE 0.0s\n\nView build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/xbcnbzvgm4nleiesrrgw9xjld",
+    "rc": 0
+  },
+  {
+    "title": "Docker images",
+    "cmd": "docker image ls scale-app",
+    "output": "IMAGE           ID             DISK USAGE   CONTENT SIZE   EXTRA\nscale-app:1.0   a4c99e89918d        226MB         49.1MB        \nscale-app:2.0   035ee86bf47f        226MB         49.1MB        \nscale-app:3.0   09fb620cbe44        226MB         49.1MB",
+    "rc": 0
+  },
+  {
+    "title": "List kind clusters",
+    "cmd": "kind get clusters",
+    "output": "No kind clusters found.",
+    "rc": 0
+  },
+  {
+    "title": "Create Kind cluster (1 control-plane + 2 workers)",
+    "cmd": "kind create cluster --name task14 --config kind-config-task14.yaml --wait 120s",
+    "output": "Creating cluster \"task14\" ...\n \u2022 Ensuring node image (kindest/node:v1.37.0) \ud83d\uddbc\ufe0f  ...\n \u2713 Ensuring node image (kindest/node:v1.37.0) \ud83d\uddbc\ufe0f\n \u2022 Preparing nodes \ud83d\udce6 \ud83d\udce6 \ud83d\udce6   ...\n \u2713 Preparing nodes \ud83d\udce6 \ud83d\udce6 \ud83d\udce6 \n \u2022 Writing configuration \ud83d\udcdc  ...\n \u2713 Writing configuration \ud83d\udcdc\n \u2022 Starting control-plane \ud83d\udd79\ufe0f  ...\n \u2713 Starting control-plane \ud83d\udd79\ufe0f\n \u2022 Installing CNI \ud83d\udd0c  ...\n \u2713 Installing CNI \ud83d\udd0c\n \u2022 Installing StorageClass \ud83d\udcbe  ...\n \u2713 Installing StorageClass \ud83d\udcbe\n \u2022 Joining worker nodes \ud83d\ude9c  ...\n \u2713 Joining worker nodes \ud83d\ude9c\n \u2022 Waiting \u2264 2m0s for control-plane = Ready \u23f3  ...\n \u2713 Waiting \u2264 2m0s for control-plane = Ready \u23f3\n \u2022 Ready after 10s \ud83d\udc9a\nSet kubectl context to \"kind-task14\"\nYou can now use your cluster with:\n\nkubectl cluster-info --context kind-task14\n\nNot sure what to do next? \ud83d\ude05  Check out https://kind.sigs.k8s.io/docs/user/quick-start/",
+    "rc": 0
+  },
+  {
+    "title": "Set kubectl context",
+    "cmd": "kubectl config use-context kind-task14",
+    "output": "Switched to context \"kind-task14\".",
+    "rc": 0
+  },
+  {
+    "title": "Wait for all nodes Ready",
+    "cmd": "kubectl wait --for=condition=Ready nodes --all --timeout=180s",
+    "output": "node/task14-control-plane condition met\nnode/task14-worker condition met\nnode/task14-worker2 condition met",
+    "rc": 0
+  },
+  {
+    "title": "Cluster nodes",
+    "cmd": "kubectl get nodes -o wide",
+    "output": "NAME                   STATUS   ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                       KERNEL-VERSION            CONTAINER-RUNTIME\ntask14-control-plane   Ready    control-plane   23s   v1.37.0   172.18.0.2    <none>        Debian GNU/Linux 13 (trixie)   7.0.14-linuxkit (arm64)   containerd://2.3.4\ntask14-worker          Ready    <none>          13s   v1.37.0   172.18.0.4    <none>        Debian GNU/Linux 13 (trixie)   7.0.14-linuxkit (arm64)   containerd://2.3.4\ntask14-worker2         Ready    <none>          13s   v1.37.0   172.18.0.3    <none>        Debian GNU/Linux 13 (trixie)   7.0.14-linuxkit (arm64)   containerd://2.3.4",
+    "rc": 0
+  },
+  {
+    "title": "Load image 1.0 into Kind",
+    "cmd": "kind load docker-image scale-app:1.0 --name task14",
+    "output": "app:1.0\" with ID \"sha256:a4c99e89918dacfbbab5410128d059e9c7d4900781b05009139c826cb10ed9ef\" not yet present on node \"task14-worker2\", loading...\nImage: \"scale-app:1.0\" with ID \"sha256:a4c99e89918dacfbbab5410128d059e9c7d4900781b05009139c826cb10ed9ef\" not yet present on node \"task14-worker\", loading...",
+    "rc": 0
+  },
+  {
+    "title": "Load image 2.0 into Kind",
+    "cmd": "kind load docker-image scale-app:2.0 --name task14",
+    "output": "app:2.0\" with ID \"sha256:035ee86bf47fbf4a3e2a2d87f2e4864e1e425e97f28b062ba0d5c919d61f7a9c\" not yet present on node \"task14-worker2\", loading...\nImage: \"scale-app:2.0\" with ID \"sha256:035ee86bf47fbf4a3e2a2d87f2e4864e1e425e97f28b062ba0d5c919d61f7a9c\" not yet present on node \"task14-worker\", loading...",
+    "rc": 0
+  },
+  {
+    "title": "Load image 3.0 into Kind",
+    "cmd": "kind load docker-image scale-app:3.0 --name task14",
+    "output": "app:3.0\" with ID \"sha256:09fb620cbe446acf6ae989d20c6136822cd4903cfb8350d8491b69c6f3c0d72d\" not yet present on node \"task14-worker2\", loading...\nImage: \"scale-app:3.0\" with ID \"sha256:09fb620cbe446acf6ae989d20c6136822cd4903cfb8350d8491b69c6f3c0d72d\" not yet present on node \"task14-worker\", loading...",
+    "rc": 0
+  },
+  {
+    "title": "Install metrics-server",
+    "cmd": "kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml",
+    "output": "serviceaccount/metrics-server created\nclusterrole.rbac.authorization.k8s.io/system:aggregated-metrics-reader created\nclusterrole.rbac.authorization.k8s.io/system:metrics-server created\nrolebinding.rbac.authorization.k8s.io/metrics-server-auth-reader created\nclusterrolebinding.rbac.authorization.k8s.io/metrics-server:system:auth-delegator created\nclusterrolebinding.rbac.authorization.k8s.io/system:metrics-server created\nservice/metrics-server created\ndeployment.apps/metrics-server created\napiservice.apiregistration.k8s.io/v1beta1.metrics.k8s.io created",
+    "rc": 0
+  },
+  {
+    "title": "Patch metrics-server for Kind",
+    "cmd": "kubectl patch deployment metrics-server -n kube-system --type=json -p='[{\"op\":\"add\",\"path\":\"/spec/template/spec/containers/0/args/-\",\"value\":\"--kubelet-insecure-tls\"}]'",
+    "output": "deployment.apps/metrics-server patched",
+    "rc": 0
+  },
+  {
+    "title": "Wait for metrics-server",
+    "cmd": "kubectl rollout status deployment/metrics-server -n kube-system --timeout=180s",
+    "output": "Waiting for deployment \"metrics-server\" rollout to finish: 1 old replicas are pending termination...\nWaiting for deployment \"metrics-server\" rollout to finish: 1 old replicas are pending termination...\nWaiting for deployment \"metrics-server\" rollout to finish: 1 old replicas are pending termination...\ndeployment \"metrics-server\" successfully rolled out",
+    "rc": 0
+  },
+  {
+    "title": "Apply manifests",
+    "cmd": "kubectl apply -f k8s14/",
+    "output": "namespace/scale-demo created\ndeployment.apps/web created\nservice/web created",
+    "rc": 0
+  },
+  {
+    "title": "Wait for initial rollout",
+    "cmd": "kubectl rollout status deployment/web -n scale-demo --timeout=240s",
+    "output": "Waiting for deployment \"web\" rollout to finish: 0 of 3 updated replicas are available...\nWaiting for deployment \"web\" rollout to finish: 1 of 3 updated replicas are available...\nWaiting for deployment \"web\" rollout to finish: 2 of 3 updated replicas are available...\ndeployment \"web\" successfully rolled out",
+    "rc": 0
+  },
+  {
+    "title": "Get pods (initial)",
+    "cmd": "kubectl get pods -n scale-demo -o wide",
+    "output": "NAME                   READY   STATUS    RESTARTS   AGE   IP           NODE             NOMINATED NODE   READINESS GATES\nweb-76cf8458c9-6tx64   1/1     Running   0          3s    10.244.1.3   task14-worker2   <none>           <none>\nweb-76cf8458c9-8dcmq   1/1     Running   0          3s    10.244.2.4   task14-worker    <none>           <none>\nweb-76cf8458c9-bttdp   1/1     Running   0          3s    10.244.2.3   task14-worker    <none>           <none>",
+    "rc": 0
+  },
+  {
+    "title": "Get deployment and service",
+    "cmd": "kubectl get deploy,svc,endpointslices -n scale-demo",
+    "output": "NAME                  READY   UP-TO-DATE   AVAILABLE   AGE\ndeployment.apps/web   3/3     3            3           3s\n\nNAME          TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE\nservice/web   NodePort   10.96.16.135   <none>        80:30100/TCP   3s\n\nNAME                                       ADDRESSTYPE   PORTS   ENDPOINTS                          AGE\nendpointslice.discovery.k8s.io/web-4tw42   IPv4          8000    10.244.2.4,10.244.2.3,10.244.1.3   3s",
+    "rc": 0
+  },
+  {
+    "title": "Application reachable (version 1.0)",
+    "cmd": "curl -s http://localhost:8100/version",
+    "output": "{\"node\":\"task14-worker\",\"pod\":\"web-76cf8458c9-8dcmq\",\"version\":\"1.0\"}\n",
+    "rc": 0
+  },
+  {
+    "title": "Scale 3 to 6 replicas",
+    "cmd": "kubectl scale deployment/web --replicas=6 -n scale-demo",
+    "output": "deployment.apps/web scaled\nall 6 pods Ready after 5.6 s\n\nNAME                   READY   STATUS    RESTARTS   AGE   IP           NODE             NOMINATED NODE   READINESS GATES\nweb-76cf8458c9-4n6z4   1/1     Running   0          5s    10.244.2.5   task14-worker    <none>           <none>\nweb-76cf8458c9-6tx64   1/1     Running   0          9s    10.244.1.3   task14-worker2   <none>           <none>\nweb-76cf8458c9-8dcmq   1/1     Running   0          9s    10.244.2.4   task14-worker    <none>           <none>\nweb-76cf8458c9-bttdp   1/1     Running   0          9s    10.244.2.3   task14-worker    <none>           <none>\nweb-76cf8458c9-mkdv5   1/1     Running   0          5s    10.244.1.4   task14-worker2   <none>           <none>\nweb-76cf8458c9-mrj6x   1/1     Running   0          5s    10.244.1.5   task14-worker2   <none>           <none>",
+    "rc": 0
+  },
+  {
+    "title": "Scale 6 to 2 replicas",
+    "cmd": "kubectl scale deployment/web --replicas=2 -n scale-demo",
+    "output": "deployment.apps/web scaled\nall 2 pods Ready after 0.1 s\n\nNAME                   READY   STATUS        RESTARTS   AGE   IP           NODE             NOMINATED NODE   READINESS GATES\nweb-76cf8458c9-4n6z4   1/1     Terminating   0          6s    10.244.2.5   task14-worker    <none>           <none>\nweb-76cf8458c9-6tx64   1/1     Running       0          10s   10.244.1.3   task14-worker2   <none>           <none>\nweb-76cf8458c9-8dcmq   1/1     Running       0          10s   10.244.2.4   task14-worker    <none>           <none>\nweb-76cf8458c9-bttdp   1/1     Terminating   0          10s   10.244.2.3   task14-worker    <none>           <none>\nweb-76cf8458c9-mkdv5   1/1     Terminating   0          6s    10.244.1.4   task14-worker2   <none>           <none>\nweb-76cf8458c9-mrj6x   1/1     Terminating   0          6s    10.244.1.5   task14-worker2   <none>           <none>",
+    "rc": 0
+  },
+  {
+    "title": "Scale 2 to 3 replicas",
+    "cmd": "kubectl scale deployment/web --replicas=3 -n scale-demo",
+    "output": "deployment.apps/web scaled\nall 3 pods Ready after 4.5 s\n\nNAME                   READY   STATUS    RESTARTS   AGE   IP           NODE             NOMINATED NODE   READINESS GATES\nweb-76cf8458c9-4tx79   1/1     Running   0          4s    10.244.2.6   task14-worker    <none>           <none>\nweb-76cf8458c9-6tx64   1/1     Running   0          14s   10.244.1.3   task14-worker2   <none>           <none>\nweb-76cf8458c9-8dcmq   1/1     Running   0          14s   10.244.2.4   task14-worker    <none>           <none>",
+    "rc": 0
+  },
+  {
+    "title": "Rolling update to 2.0",
+    "cmd": "kubectl set image deployment/web web=scale-app:2.0 -n scale-demo",
+    "output": "deployment.apps/web image updated\nWaiting for deployment \"web\" rollout to finish: 1 out of 3 new replicas have been updated...\nWaiting for deployment \"web\" rollout to finish: 1 out of 3 new replicas have been updated...\nWaiting for deployment \"web\" rollout to finish: 1 out of 3 new replicas have been updated...\nWaiting for deployment \"web\" rollout to finish: 2 out of 3 new replicas have been updated...\nWaiting for deployment \"web\" rollout to finish: 2 out of 3 new replicas have been updated...\nWaiting for deployment \"web\" rollout to finish: 2 out of 3 new replicas have been updated...\nWaiting for deployment \"web\" rollout to finish: 2 out of 3 new replicas have been updated...\nWaiting for deployment \"web\" rollout to finish: 1 old replicas are pending termination...\nWaiting for deployment \"web\" rollout to finish: 1 old replicas are pending termination...\nWaiting for deployment \"web\" rollout to finish: 1 old replicas are pending termination...\ndeployment \"web\" successfully rolled out\n(update took 9.9 s)",
+    "rc": 0
+  },
+  {
+    "title": "Rollout history",
+    "cmd": "kubectl rollout history deployment/web -n scale-demo",
+    "output": "deployment.apps/web \nREVISION  CHANGE-CAUSE\n1         update image to scale-app:2.0\n2         update image to scale-app:2.0",
+    "rc": 0
+  },
+  {
+    "title": "ReplicaSets after update",
+    "cmd": "kubectl get rs -n scale-demo",
+    "output": "NAME             DESIRED   CURRENT   READY   AGE\nweb-6ddd4dc98b   3         3         3       14s\nweb-76cf8458c9   0         0         0       32s",
+    "rc": 0
+  },
+  {
+    "title": "Availability during rolling update",
+    "cmd": "probe: GET http://localhost:8100/version every 0.1 s",
+    "output": "requests sent      : 145\nsuccessful (HTTP 200): 141\nfailed             : 4\navailability       : 97.241 %\nresponses by version: {'1.0': 95, '2.0': 46}\nlatency (ms)       : p50 5.8  p95 9.2  max 29.1",
+    "rc": 0
+  },
+  {
+    "title": "Version transition timeline",
+    "cmd": "kubectl get pods (sampled every 1.5 s)",
+    "output": "t(s)    terminating        total v1.0_notready   v1.0_ready v2.0_notready   v2.0_ready\n  0.1             0            3            0            3            0            0\n  4.8             0            4            0            3            1            0\n  8.0             1            5            0            2            1            1\n  9.6             0            4            0            2            1            1\n 11.2             0            4            0            1            1            2\n 14.4             0            3            0            0            0            3",
+    "rc": 0
+  },
+  {
+    "title": "Faulty release 3.0 (rollout stalls)",
+    "cmd": "kubectl set image deployment/web web=scale-app:3.0 -n scale-demo",
+    "output": "deployment.apps/web image updated\nWaiting for deployment \"web\" rollout to finish: 1 out of 3 new replicas have been updated...\nerror: deployment \"web\" exceeded its progress deadline",
+    "rc": 1
+  },
+  {
+    "title": "Pods during failed rollout",
+    "cmd": "kubectl get pods -n scale-demo -o wide",
+    "output": "NAME                   READY   STATUS    RESTARTS   AGE   IP           NODE             NOMINATED NODE   READINESS GATES\nweb-6ddd4dc98b-htr9c   1/1     Running   0          75s   10.244.1.6   task14-worker2   <none>           <none>\nweb-6ddd4dc98b-n2d55   1/1     Running   0          72s   10.244.2.8   task14-worker    <none>           <none>\nweb-6ddd4dc98b-rbmvr   1/1     Running   0          78s   10.244.2.7   task14-worker    <none>           <none>\nweb-bb78f4c6f-lbm6w    0/1     Running   0          61s   10.244.2.9   task14-worker    <none>           <none>",
+    "rc": 0
+  },
+  {
+    "title": "Deployment conditions",
+    "cmd": "kubectl get deployment web -n scale-demo -o jsonpath='{range .status.conditions[*]}{.type}={.status} ({.reason}){\"\\n\"}{end}'",
+    "output": "Available=True (MinimumReplicasAvailable)\nProgressing=False (ProgressDeadlineExceeded)",
+    "rc": 0
+  },
+  {
+    "title": "Rollback with rollout undo",
+    "cmd": "kubectl rollout undo deployment/web -n scale-demo",
+    "output": "deployment.apps/web rolled back\nWarning: resource deployments/web was previously managed with 'kubectl apply'. Rolling back will not update the kubectl.kubernetes.io/last-applied-configuration annotation, which may cause unexpected behavior on future 'kubectl apply' operations. Consider using 'kubectl apply' with your previous configuration file instead.\ndeployment \"web\" successfully rolled out\n(rollback took 0.2 s)",
+    "rc": 0
+  },
+  {
+    "title": "Pods after rollback",
+    "cmd": "kubectl get pods -n scale-demo -o wide",
+    "output": "NAME                   READY   STATUS    RESTARTS   AGE   IP           NODE             NOMINATED NODE   READINESS GATES\nweb-6ddd4dc98b-htr9c   1/1     Running   0          79s   10.244.1.6   task14-worker2   <none>           <none>\nweb-6ddd4dc98b-n2d55   1/1     Running   0          76s   10.244.2.8   task14-worker    <none>           <none>\nweb-6ddd4dc98b-rbmvr   1/1     Running   0          82s   10.244.2.7   task14-worker    <none>           <none>",
+    "rc": 0
+  },
+  {
+    "title": "Rollout history after rollback",
+    "cmd": "kubectl rollout history deployment/web -n scale-demo",
+    "output": "deployment.apps/web \nREVISION  CHANGE-CAUSE\n1         update image to scale-app:2.0\n3         update image to scale-app:3.0 (faulty)\n4         update image to scale-app:3.0 (faulty)",
+    "rc": 0
+  },
+  {
+    "title": "Availability during faulty release and rollback",
+    "cmd": "probe: GET http://localhost:8100/version every 0.1 s",
+    "output": "requests sent      : 607\nsuccessful (HTTP 200): 607\nfailed             : 0\navailability       : 100.0 %\nresponses by version: {'2.0': 607}\nlatency (ms)       : p50 6.8  p95 8.8  max 18.5",
+    "rc": 0
+  },
+  {
+    "title": "Pod resource usage (baseline)",
+    "cmd": "kubectl top pods -n scale-demo",
+    "output": "web-6ddd4dc98b-htr9c   10m   53Mi   \nweb-6ddd4dc98b-n2d55   9m    53Mi   \nweb-6ddd4dc98b-rbmvr   11m   53Mi",
+    "rc": 0
+  },
+  {
+    "title": "Node resource usage (baseline)",
+    "cmd": "kubectl top nodes",
+    "output": "NAME                   CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   \ntask14-control-plane   175m         1%       879Mi           11%         \ntask14-worker          67m          0%       415Mi           5%          \ntask14-worker2         49m          0%       331Mi           4%",
+    "rc": 0
+  },
+  {
+    "title": "Apply HPA",
+    "cmd": "kubectl apply -f k8s14/optional/hpa.yaml",
+    "output": "horizontalpodautoscaler.autoscaling/web created",
+    "rc": 0
+  },
+  {
+    "title": "Pod resource usage (under load)",
+    "cmd": "kubectl top pods -n scale-demo",
+    "output": "NAME                   CPU(cores)   MEMORY(bytes)   \nweb-6ddd4dc98b-4rvbd   187m         53Mi            \nweb-6ddd4dc98b-97bk7   189m         53Mi            \nweb-6ddd4dc98b-htr9c   185m         53Mi            \nweb-6ddd4dc98b-n2d55   175m         54Mi            \nweb-6ddd4dc98b-p82qz   192m         53Mi            \nweb-6ddd4dc98b-rbmvr   187m         53Mi",
+    "rc": 0
+  },
+  {
+    "title": "HPA status (under load)",
+    "cmd": "kubectl get hpa web -n scale-demo",
+    "output": "NAME   REFERENCE        TARGETS         MINPODS   MAXPODS   REPLICAS   AGE\nweb    Deployment/web   cpu: 185%/50%   3         6         6          94s",
+    "rc": 0
+  },
+  {
+    "title": "Node resource usage (under load)",
+    "cmd": "kubectl top nodes",
+    "output": "NAME                   CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   \ntask14-control-plane   105m         1%       890Mi           11%         \ntask14-worker          593m         5%       421Mi           5%          \ntask14-worker2         608m         6%       452Mi           5%",
+    "rc": 0
+  },
+  {
+    "title": "HPA status (after load)",
+    "cmd": "kubectl get hpa web -n scale-demo",
+    "output": "NAME   REFERENCE        TARGETS        MINPODS   MAXPODS   REPLICAS   AGE\nweb    Deployment/web   cpu: 14%/50%   3         6         6          3m21s",
+    "rc": 0
+  },
+  {
+    "title": "Describe HPA",
+    "cmd": "kubectl describe hpa web -n scale-demo | tail -n 28",
+    "output": "Metrics:                                               ( current / target )\n  resource cpu on pods  (as a percentage of request):  14% (14m) / 50%\nMin replicas:                                          3\nMax replicas:                                          6\nBehavior:\n  Scale Up:\n    Stabilization Window: 0 seconds\n    Select Policy: Max\n    Policies:\n      - Type: Pods  Value: 3  Period: 15 seconds\n  Scale Down:\n    Stabilization Window: 30 seconds\n    Select Policy: Max\n    Policies:\n      - Type: Pods  Value: 3  Period: 15 seconds\nDeployment pods:    6 current / 3 desired\nConditions:\n  Type            Status  Reason              Message\n  ----            ------  ------              -------\n  AbleToScale     True    SucceededRescale    the HPA controller was able to update the target scale to 3\n  ScalingActive   True    ValidMetricFound    the HPA was able to successfully calculate a replica count from cpu resource utilization (percentage of request)\n  ScalingLimited  False   DesiredWithinRange  the desired count is within the acceptable range\n  ScaledToZero    False   NotScaledToZero     the HPA controller did not scale the workload to zero\nEvents:\n  Type    Reason             Age    From                       Message\n  ----    ------             ----   ----                       -------\n  Normal  SuccessfulRescale  2m51s  horizontal-pod-autoscaler  New size: 6; reason: cpu resource utilization (percentage of request) above target\n  Normal  SuccessfulRescale  6s     horizontal-pod-autoscaler  New size: 3; reason: All metrics below target",
+    "rc": 0
+  },
+  {
+    "title": "Availability during autoscaling under load",
+    "cmd": "probe: GET http://localhost:8100/version every 0.5 s",
+    "output": "requests sent      : 349\nsuccessful (HTTP 200): 349\nfailed             : 0\navailability       : 100.0 %\nresponses by version: {'2.0': 349}\nlatency (ms)       : p50 9.3  p95 295.3  max 498.1",
+    "rc": 0
+  },
+  {
+    "title": "Pods after autoscaling",
+    "cmd": "kubectl get pods -n scale-demo",
+    "output": "NAME                   READY   STATUS    RESTARTS   AGE\nweb-6ddd4dc98b-97bk7   1/1     Running   0          2m51s\nweb-6ddd4dc98b-htr9c   1/1     Running   0          4m40s\nweb-6ddd4dc98b-p82qz   1/1     Running   0          2m51s",
+    "rc": 0
+  },
+  {
+    "title": "Deployment details",
+    "cmd": "kubectl describe deployment web -n scale-demo",
+    "output": "Name:                   web\nNamespace:              scale-demo\nCreationTimestamp:      Sat, 10 Oct 2026 02:48:49 +0530\nLabels:                 app=web\nAnnotations:            deployment.kubernetes.io/revision: 4\n                        kubernetes.io/change-cause: update image to scale-app:3.0 (faulty)\nSelector:               app=web\nReplicas:               3 desired | 3 updated | 3 total | 3 available | 0 unavailable\nStrategyType:           RollingUpdate\nMinReadySeconds:        0\nRollingUpdateStrategy:  0 max unavailable, 1 max surge\nPod Template:\n  Labels:  app=web\n  Containers:\n   web:\n    Image:      scale-app:2.0\n    Port:       8000/TCP\n    Host Port:  0/TCP\n    Limits:\n      cpu:     200m\n      memory:  128Mi\n    Requests:\n      cpu:      100m\n      memory:   64Mi\n    Liveness:   http-get http://:8000/health delay=0s timeout=1s period=10s successThreshold=1 failureThreshold=3\n    Readiness:  http-get http://:8000/ready delay=0s timeout=1s period=2s successThreshold=1 failureThreshold=3\n    Environment:\n      POD_NAME:     (v1:metadata.name)\n      NODE_NAME:    (v1:spec.nodeName)\n    Mounts:        <none>\n  Volumes:         <none>\n  Node-Selectors:  <none>\n  Tolerations:     <none>\nConditions:\n  Type           Status  Reason\n  ----           ------  ------\n  Progressing    True    NewReplicaSetAvailable\n  Available      True    MinimumReplicasAvailable\nOldReplicaSets:  web-76cf8458c9 (0/0 replicas created), web-bb78f4c6f (0/0 replicas created)\nNewReplicaSet:   web-6ddd4dc98b (3/3 replicas created)\nEvents:\n  Type    Reason             Age                 From                   Message\n  ----    ------             ----                ----                   -------\n  Normal  ScalingReplicaSet  5m1s                deployment-controller  Scaled up replica set web-76cf8458c9 from 0 to 3\n  Normal  ScalingReplicaSet  4m57s               deployment-controller  Scaled up replica set web-76cf8458c9 from 3 to 6\n  Normal  ScalingReplicaSet  4m51s               deployment-controller  Scaled down replica set web-76cf8458c9 from 6 to 2\n  Normal  ScalingReplicaSet  4m51s               deployment-controller  Scaled up replica set web-76cf8458c9 from 2 to 3\n  Normal  ScalingReplicaSet  4m43s               deployment-controller  Scaled up replica set web-6ddd4dc98b from 0 to 1\n  Normal  ScalingReplicaSet  4m40s               deployment-controller  Scaled down replica set web-76cf8458c9 from 3 to 2\n  Normal  ScalingReplicaSet  4m40s               deployment-controller  Scaled up replica set web-6ddd4dc98b from 1 to 2\n  Normal  ScalingReplicaSet  4m37s               deployment-controller  Scaled down replica set web-76cf8458c9 from 2 to 1\n  Normal  ScalingReplicaSet  4m37s               deployment-controller  Scaled up replica set web-6ddd4dc98b from 2 to 3\n  Normal  ScalingReplicaSet  6s (x5 over 4m34s)  deployment-controller  (combined from similar events): Scaled down replica set web-6ddd4dc98b from 6 to 3",
+    "rc": 0
+  },
+  {
+    "title": "Recent events",
+    "cmd": "kubectl get events -n scale-demo --sort-by=.lastTimestamp | tail -n 40",
+    "output": "4m26s       Normal    SuccessfulCreate    replicaset/web-bb78f4c6f      Created pod: web-bb78f4c6f-lbm6w\n4m26s       Normal    Scheduled           pod/web-bb78f4c6f-lbm6w       Successfully assigned scale-demo/web-bb78f4c6f-lbm6w to task14-worker\n4m25s       Normal    Pulled              pod/web-bb78f4c6f-lbm6w       Container image \"scale-app:3.0\" already present on machine and can be accessed by the pod\n4m25s       Normal    Created             pod/web-bb78f4c6f-lbm6w       Container created\n4m25s       Normal    Started             pod/web-bb78f4c6f-lbm6w       Container started\n4m25s       Warning   Unhealthy           pod/web-bb78f4c6f-lbm6w       Readiness probe failed: Get \"http://10.244.2.9:8000/ready\": dial tcp 10.244.2.9:8000: connect: connection refused\n3m39s       Warning   Unhealthy           pod/web-bb78f4c6f-lbm6w       Readiness probe failed: HTTP probe failed with statuscode: 503\n3m25s       Normal    Killing             pod/web-bb78f4c6f-lbm6w       Stopping container web\n3m25s       Normal    SuccessfulDelete    replicaset/web-bb78f4c6f      Deleted pod: web-bb78f4c6f-lbm6w\n2m51s       Normal    Scheduled           pod/web-6ddd4dc98b-p82qz      Successfully assigned scale-demo/web-6ddd4dc98b-p82qz to task14-worker2\n2m51s       Normal    SuccessfulCreate    replicaset/web-6ddd4dc98b     Created pod: web-6ddd4dc98b-p82qz\n2m51s       Normal    SuccessfulCreate    replicaset/web-6ddd4dc98b     Created pod: web-6ddd4dc98b-97bk7\n2m51s       Normal    Created             pod/web-6ddd4dc98b-p82qz      Container created\n2m51s       Normal    Scheduled           pod/web-6ddd4dc98b-97bk7      Successfully assigned scale-demo/web-6ddd4dc98b-97bk7 to task14-worker\n2m51s       Normal    SuccessfulRescale   horizontalpodautoscaler/web   New size: 6; reason: cpu resource utilization (percentage of request) above target\n2m51s       Normal    Scheduled           pod/web-6ddd4dc98b-4rvbd      Successfully assigned scale-demo/web-6ddd4dc98b-4rvbd to task14-worker2\n2m51s       Normal    Pulled              pod/web-6ddd4dc98b-p82qz      Container image \"scale-app:2.0\" already present on machine and can be accessed by the pod\n2m51s       Normal    SuccessfulCreate    replicaset/web-6ddd4dc98b     Created pod: web-6ddd4dc98b-4rvbd\n2m50s       Normal    Created             pod/web-6ddd4dc98b-4rvbd      Container created\n2m50s       Warning   Unhealthy           pod/web-6ddd4dc98b-4rvbd      Readiness probe failed: Get \"http://10.244.1.7:8000/ready\": dial tcp 10.244.1.7:8000: connect: connection refused\n2m50s       Normal    Pulled              pod/web-6ddd4dc98b-4rvbd      Container image \"scale-app:2.0\" already present on machine and can be accessed by the pod\n2m50s       Normal    Pulled              pod/web-6ddd4dc98b-97bk7      Container image \"scale-app:2.0\" already present on machine and can be accessed by the pod\n2m50s       Normal    Started             pod/web-6ddd4dc98b-p82qz      Container started\n2m50s       Warning   Unhealthy           pod/web-6ddd4dc98b-p82qz      Readiness probe failed: Get \"http://10.244.1.8:8000/ready\": dial tcp 10.244.1.8:8000: connect: connection refused\n2m50s       Normal    Started             pod/web-6ddd4dc98b-4rvbd      Container started\n2m50s       Normal    Created             pod/web-6ddd4dc98b-97bk7      Container created\n2m50s       Normal    Started             pod/web-6ddd4dc98b-97bk7      Container started\n2m50s       Warning   Unhealthy           pod/web-6ddd4dc98b-97bk7      Readiness probe failed: Get \"http://10.244.2.10:8000/ready\": dial tcp 10.244.2.10:8000: connect: connection refused\n2m48s       Warning   Unhealthy           pod/web-6ddd4dc98b-p82qz      Readiness probe failed: Get \"http://10.244.1.8:8000/ready\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)\n2m48s       Warning   Unhealthy           pod/web-6ddd4dc98b-97bk7      Readiness probe failed: Get \"http://10.244.2.10:8000/ready\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)\n6s          Normal    Killing             pod/web-6ddd4dc98b-n2d55      Stopping container web\n6s          Normal    SuccessfulDelete    replicaset/web-6ddd4dc98b     Deleted pod: web-6ddd4dc98b-4rvbd\n6s          Normal    Killing             pod/web-6ddd4dc98b-4rvbd      Stopping container web\n6s          Normal    SuccessfulDelete    replicaset/web-6ddd4dc98b     Deleted pod: web-6ddd4dc98b-n2d55\n6s          Normal    SuccessfulDelete    replicaset/web-6ddd4dc98b     Deleted pod: web-6ddd4dc98b-rbmvr\n6s          Normal    Killing             pod/web-6ddd4dc98b-rbmvr      Stopping container web\n6s          Normal    ScalingReplicaSet   deployment/web                (combined from similar events): Scaled down replica set web-6ddd4dc98b from 6 to 3\n6s          Normal    SuccessfulRescale   horizontalpodautoscaler/web   New size: 3; reason: All metrics below target\n5s          Warning   Unhealthy           pod/web-6ddd4dc98b-rbmvr      Readiness probe failed: Get \"http://10.244.2.7:8000/ready\": dial tcp 10.244.2.7:8000: connect: connection refused\n5s          Warning   Unhealthy           pod/web-6ddd4dc98b-4rvbd      Readiness probe failed: Get \"http://10.244.1.7:8000/ready\": read tcp 10.244.1.1:57024->10.244.1.7:8000: read: connection reset by peer",
+    "rc": 0
+  }
+]
